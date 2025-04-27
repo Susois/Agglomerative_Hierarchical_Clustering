@@ -19,12 +19,19 @@ class AppUI:
         self.dendrogram_canvas = Canvas(dendrogram_frame, width=600, height=200, bg='white')
         self.dendrogram_canvas.pack(side="left", fill="both", expand=True)
 
-        # Scrollbar dọc
-        dendrogram_scrollbar = Scrollbar(dendrogram_frame, orient="vertical", command=self.dendrogram_canvas.yview)
-        dendrogram_scrollbar.pack(side="right", fill="y")
+        # Scrollbar dọc cho dendrogram
+        dendrogram_scrollbar_y = Scrollbar(dendrogram_frame, orient="vertical", command=self.dendrogram_canvas.yview)
+        dendrogram_scrollbar_y.pack(side="right", fill="y")
+
+        # Scrollbar ngang cho dendrogram
+        dendrogram_scrollbar_x = Scrollbar(master, orient="horizontal", command=self.dendrogram_canvas.xview)
+        dendrogram_scrollbar_x.pack(fill="x")
 
         # Gán scrollbar vào canvas
-        self.dendrogram_canvas.configure(yscrollcommand=dendrogram_scrollbar.set)
+        self.dendrogram_canvas.configure(
+            yscrollcommand=dendrogram_scrollbar_y.set,
+            xscrollcommand=dendrogram_scrollbar_x.set
+        )
         self.dendrogram_canvas.bind('<Configure>', self.on_dendrogram_configure)
 
         # Input section
@@ -108,8 +115,11 @@ class AppUI:
             for (x, y) in cluster:
                 screen_x = center_x + x * zoom
                 screen_y = center_y - y * zoom
-                self.canvas.create_oval(screen_x - point_size, screen_y - point_size,
-                                        screen_x + point_size, screen_y + point_size, fill=color)
+                self.canvas.create_oval(
+                    screen_x - point_size, screen_y - point_size,
+                    screen_x + point_size, screen_y + point_size,
+                    fill=color
+                )
 
     def update_dendrogram(self, step_data):
         self.dendrogram_canvas.delete("all")
